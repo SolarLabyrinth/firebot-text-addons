@@ -7,9 +7,9 @@ interface Params {
 const script: Firebot.CustomScript<Params> = {
   getScriptManifest: () => {
     return {
-      name: "Starter Custom Script",
-      description: "A starter custom script for build",
-      author: "SomeDev",
+      name: "Solar's TTS Message Parser",
+      description: "A TTS Message Parsing Script",
+      author: "SolarLabyrinth",
       version: "1.0",
       firebotVersion: "5",
     };

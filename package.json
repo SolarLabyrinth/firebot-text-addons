@@ -1,8 +1,8 @@
 {
-  "name": "firebot-custom-script-starter",
-  "scriptOutputName": "starterScript",
+  "name": "firebot-custom-tts-message-parser",
+  "scriptOutputName": "solarTTSMessageParser",
   "version": "1.0.0",
-  "description": "A starter Firebot custom script",
+  "description": "A TTS Message Parsing Script",
   "main": "",
   "scripts": {
     "build": "webpack",
@@ -10,7 +10,10 @@
     "copy": "node ./scripts/copy-build.js",
     "test": "jest"
   },
-  "author": "ebiggz",
+  "authors": [
+    "SolarLabyrinth",
+    "ebiggz"
+  ],
   "license": "GNU3",
   "devDependencies": {
     "@crowbartools/firebot-custom-scripts-types": "^5.60.1",

@@ -1,12 +1,12 @@
 import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
 import { Effects } from "@crowbartools/firebot-custom-scripts-types/types/effects";
-import { containsNonASCIICharacters } from "./message-parser";
+import { containsBadWord, containsNonASCIICharacters } from "./message-parser";
 
 interface CleanTTSMessageEffectParams {
   message: string;
-  stripNonASCII: boolean;
+  filterNonASCII: boolean;
   stripUrls: boolean;
-  stripBadWords: boolean;
+  filterBadWords: boolean;
   replaceUsernames: boolean;
   ttsNameKey: string;
   stripEmotes: boolean;
@@ -23,10 +23,21 @@ const cleanTTSMessageEffect: Effects.EffectType<CleanTTSMessageEffectParams> = {
     dependencies: [],
     outputs: [
       {
-        label: "Clean Message",
-        defaultName: "cleanMessage",
+        label: "Was Message Clean",
+        defaultName: "ttsParserMessageWasClean",
         description:
-          "The result of the JavaScript code. Note you must use 'return' for a result to be captured.",
+          "True if the message did not fail any filter. False if it did fail any filter",
+      },
+      {
+        label: "Tripped Filter",
+        defaultName: "ttsParserTrippedFilter",
+        description: `The name of the filter that was tripped, or empty string if the message was clean. ("ASCII","BAD_WORD", "")`,
+      },
+      {
+        label: "Clean Message",
+        defaultName: "ttsParserCleanedMessage",
+        description:
+          "The result of the tts message parsing. Either the original message, a modified message, or an empty string",
       },
     ],
   } as any,
@@ -40,16 +51,16 @@ const cleanTTSMessageEffect: Effects.EffectType<CleanTTSMessageEffectParams> = {
     </eos-container>
     <eos-container pad-top="true">
       <firebot-checkbox 
-          label="Strip Non ASCII Characters"
-          model="effect.stripNonASCII"
+          label="Filter Non ASCII Characters"
+          model="effect.filterNonASCII"
       />
       <firebot-checkbox 
           label="Strip URLs"
           model="effect.stripUrls"
       />
       <firebot-checkbox 
-          label="Strip Bad Words (via npm bad-words)"
-          model="effect.stripBadWords"
+          label="Filter Bad Words (via npm bad-words)"
+          model="effect.filterBadWords"
       />
       <firebot-checkbox 
           label="Replace @Usernames with custom metadata names"
@@ -80,14 +91,14 @@ const cleanTTSMessageEffect: Effects.EffectType<CleanTTSMessageEffectParams> = {
     if ($scope.effect.message == null) {
       $scope.effect.message = "";
     }
-    if ($scope.effect.stripNonASCII == null) {
-      $scope.effect.stripNonASCII = true;
+    if ($scope.effect.filterNonASCII == null) {
+      $scope.effect.filterNonASCII = true;
     }
     if ($scope.effect.stripUrls == null) {
       $scope.effect.stripUrls = true;
     }
-    if ($scope.effect.stripBadWords == null) {
-      $scope.effect.stripBadWords = true;
+    if ($scope.effect.filterBadWords == null) {
+      $scope.effect.filterBadWords = true;
     }
     if ($scope.effect.replaceUsernames == null) {
       $scope.effect.replaceUsernames = true;
@@ -106,19 +117,42 @@ const cleanTTSMessageEffect: Effects.EffectType<CleanTTSMessageEffectParams> = {
     const { effect } = event;
 
     const message = effect.message;
-    const stripNonASCII = effect.stripNonASCII;
-    const stripBadWords = effect.stripBadWords;
+    const filterNonASCII = effect.filterNonASCII;
+    const stripUrls = effect.stripUrls;
+    const filterBadWords = effect.filterBadWords;
     const replaceUsernames = effect.replaceUsernames;
+    const ttsNameKey = effect.ttsNameKey;
+    const stripEmotes = effect.stripEmotes;
+    const emotesList = effect.emotesList;
 
-    let cleanMessage = message;
-    if (stripNonASCII && containsNonASCIICharacters(cleanMessage)) {
-      cleanMessage = "";
+    if (filterNonASCII && containsNonASCIICharacters(message)) {
+      return {
+        success: true,
+        outputs: {
+          ttsParserMessageWasClean: false,
+          ttsParserTrippedFilter: "ASCII",
+          ttsParserCleanedMessage: "",
+        },
+      };
+    }
+    if (filterBadWords && containsBadWord(message)) {
+      return {
+        success: true,
+        outputs: {
+          ttsParserMessageWasClean: false,
+          ttsParserTrippedFilter: "BAD_WORD",
+          ttsParserCleanedMessage: "",
+        },
+      };
     }
 
+    let cleanMessage = message;
     return {
       success: true,
       outputs: {
-        cleanMessage: cleanMessage,
+        ttsParserMessageWasClean: true,
+        ttsParserTrippedFilter: "",
+        ttsParserCleanedMessage: cleanMessage,
       },
     };
   },

@@ -1,6 +1,5 @@
 import type { UserDb } from "@crowbartools/firebot-custom-scripts-types/types/modules/user-db";
-
-const Filter = require("bad-words");
+import Filter from "bad-words";
 
 export function containsNonASCIICharacters(message: string) {
   return /[^ -~]/.test(message);

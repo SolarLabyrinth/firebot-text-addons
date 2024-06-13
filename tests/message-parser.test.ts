@@ -1,4 +1,4 @@
-import { parseMessage } from "../src/parser";
+import { parseMessage } from "../src/message-parser";
 
 function getOptions() {
   return {
@@ -110,5 +110,41 @@ test("it ignores emotes when off", () => {
   expect(response.ttsParserTrippedFilter).toBe("");
   expect(response.ttsParserCleanedMessage).toBe(
     "exampleEmote2 check out exampleEmote1"
+  );
+});
+
+test("it replaces @names when on", () => {
+  const options = getOptions();
+  options.message = "@example says: hello to @example2";
+  options.replaceUsernames = true;
+  options.atNames = new Map([
+    ["@example", "example"],
+    ["@example2", "example2"],
+  ]);
+
+  const response = parseMessage(options);
+
+  expect(response.ttsParserMessageWasClean).toBe(true);
+  expect(response.ttsParserTrippedFilter).toBe("");
+  expect(response.ttsParserCleanedMessage).toBe(
+    "example says: hello to example2"
+  );
+});
+
+test("it ignores @names when off", () => {
+  const options = getOptions();
+  options.message = "@example says: hello to @example2";
+  options.replaceUsernames = false;
+  options.atNames = new Map([
+    ["@example", "example"],
+    ["@example2", "example2"],
+  ]);
+
+  const response = parseMessage(options);
+
+  expect(response.ttsParserMessageWasClean).toBe(true);
+  expect(response.ttsParserTrippedFilter).toBe("");
+  expect(response.ttsParserCleanedMessage).toBe(
+    "@example says: hello to @example2"
   );
 });

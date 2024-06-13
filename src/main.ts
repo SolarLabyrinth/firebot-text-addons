@@ -3,11 +3,9 @@ import {
   RunRequest,
 } from "@crowbartools/firebot-custom-scripts-types";
 import { Effects } from "@crowbartools/firebot-custom-scripts-types/types/effects";
-import {
-  CleanTTSMessageEffectGUIParams,
-  parseMessage,
-  parseOptions,
-} from "./parser";
+import { parseMessage } from "./message-parser";
+import { parseOptions } from "./options-parser";
+import { CleanTTSMessageEffectGUIParams } from "./types";
 
 function makeEffect(
   runRequest: RunRequest<ScriptParams>

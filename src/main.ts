@@ -14,11 +14,11 @@ function makeEffect(
 ): Effects.EffectType<CleanTTSMessageEffectGUIParams> {
   return {
     definition: {
-      id: "solar:clean-tts-message",
+      id: "solarlabyrinth:clean-tts-message",
       name: "Clean TTS Message",
       description: "Cleans a chat message for use in TTS",
-      icon: "",
-      categories: [],
+      icon: "fad fa-comment-slash",
+      categories: ["advanced"],
       dependencies: [],
       outputs: [
         {
@@ -104,7 +104,7 @@ function makeEffect(
         $scope.effect.replaceUsernames = true;
       }
       if ($scope.effect.ttsNameKey == null) {
-        $scope.effect.ttsNameKey = "tts-name";
+        $scope.effect.ttsNameKey = runRequest.parameters.ttsName;
       }
       if ($scope.effect.stripEmotes == null) {
         $scope.effect.stripEmotes = true;
@@ -131,22 +131,34 @@ function makeEffect(
   };
 }
 
-type ScriptParams = Record<string, string>;
+type ScriptParams = {
+  ttsName: string;
+};
 
 const script: Firebot.CustomScript<ScriptParams> = {
-  getScriptManifest: () => {
+  getScriptManifest() {
     return {
-      name: "Solar's TTS Message Parser",
-      description: "A TTS Message Parsing Script",
+      name: "SolarLabyrinth's TTS Message Parser",
+      description:
+        "A TTS Message Parsing Script for handling emotes, urls, profanity, and pronunciation",
       author: "SolarLabyrinth",
       version: "1.0",
       firebotVersion: "5",
     };
   },
-  getDefaultParameters: () => {
-    return {};
+  getDefaultParameters() {
+    return {
+      ttsName: {
+        type: "string",
+        default: "tts-name",
+        description: "TTS Name Metadata Key",
+        secondaryDescription:
+          "The name of the metadata variable to use for tts pronunciation",
+      },
+    };
   },
-  run: async (runRequest) => {
+  parametersUpdated() {}, // TODO
+  run(runRequest) {
     runRequest.modules.effectManager.registerEffect(makeEffect(runRequest));
   },
 };

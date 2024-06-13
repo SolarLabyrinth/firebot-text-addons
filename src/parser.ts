@@ -138,8 +138,6 @@ export function parseMessage(options: CleanTTSMessageOptions) {
     };
   }
 
-  console.log(options);
-
   const words = options.message
     .split(/\s+/)
     .map((word) => {

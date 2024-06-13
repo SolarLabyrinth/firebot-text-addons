@@ -60,6 +60,7 @@ test("it blocks filtered words", () => {
   expect(response.ttsParserTrippedFilter).toBe("BAD_WORD");
   expect(response.ttsParserCleanedMessage).toBe("");
 });
+
 test("it strips urls", () => {
   const options = getOptions();
   options.message = "check out https://www.example.com/";
@@ -82,4 +83,32 @@ test("it doesn't strip non urls", () => {
   expect(response.ttsParserMessageWasClean).toBe(true);
   expect(response.ttsParserTrippedFilter).toBe("");
   expect(response.ttsParserCleanedMessage).toBe("check out the example site");
+});
+
+test("it strips emotes when on", () => {
+  const options = getOptions();
+  options.message = "exampleEmote2 check out exampleEmote1";
+  options.stripEmotes = true;
+  options.emotesList = new Set(["exampleEmote1", "exampleEmote2"]);
+
+  const response = parseMessage(options);
+
+  expect(response.ttsParserMessageWasClean).toBe(true);
+  expect(response.ttsParserTrippedFilter).toBe("");
+  expect(response.ttsParserCleanedMessage).toBe("check out");
+});
+
+test("it ignores emotes when off", () => {
+  const options = getOptions();
+  options.message = "exampleEmote2 check out exampleEmote1";
+  options.stripEmotes = false;
+  options.emotesList = new Set(["exampleEmote1", "exampleEmote2"]);
+
+  const response = parseMessage(options);
+
+  expect(response.ttsParserMessageWasClean).toBe(true);
+  expect(response.ttsParserTrippedFilter).toBe("");
+  expect(response.ttsParserCleanedMessage).toBe(
+    "exampleEmote2 check out exampleEmote1"
+  );
 });

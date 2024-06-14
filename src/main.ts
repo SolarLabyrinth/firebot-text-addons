@@ -85,7 +85,6 @@ function makeEffect(
     </eos-container>
   `,
     optionsController: ($scope) => {
-      // This is apparently how we set defaults
       if ($scope.effect.message == null) {
         $scope.effect.message = "$chatMessage";
       }
@@ -102,7 +101,7 @@ function makeEffect(
         $scope.effect.replaceUsernames = true;
       }
       if ($scope.effect.ttsNameKey == null) {
-        $scope.effect.ttsNameKey = runRequest.parameters.ttsName;
+        $scope.effect.ttsNameKey = "tts-name";
       }
       if ($scope.effect.stripEmotes == null) {
         $scope.effect.stripEmotes = true;
@@ -129,9 +128,7 @@ function makeEffect(
   };
 }
 
-type ScriptParams = {
-  ttsName: string;
-};
+type ScriptParams = {};
 
 const script: Firebot.CustomScript<ScriptParams> = {
   getScriptManifest() {
@@ -145,15 +142,7 @@ const script: Firebot.CustomScript<ScriptParams> = {
     };
   },
   getDefaultParameters() {
-    return {
-      ttsName: {
-        type: "string",
-        default: "tts-name",
-        description: "TTS Name Metadata Key",
-        secondaryDescription:
-          "The name of the metadata variable to use for tts pronunciation",
-      },
-    };
+    return {};
   },
   parametersUpdated() {}, // TODO
   run(runRequest) {

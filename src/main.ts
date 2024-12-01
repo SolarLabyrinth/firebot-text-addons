@@ -3,9 +3,11 @@ import {
   RunRequest,
 } from "@crowbartools/firebot-custom-scripts-types";
 import { Effects } from "@crowbartools/firebot-custom-scripts-types/types/effects";
-import { parseMessage } from "./message-parser";
-import { parseOptions } from "./options-parser";
-import { CleanTTSMessageEffectGUIParams } from "./types";
+import {
+  CleanTTSMessageEffectGUIParams,
+  parseMessage,
+  parseOptions,
+} from "./message-parser";
 
 function makeEffect(
   runRequest: RunRequest<ScriptParams>
@@ -52,10 +54,6 @@ function makeEffect(
           model="effect.filterNonASCII"
       />
       <firebot-checkbox 
-          label="Strip URLs"
-          model="effect.stripUrls"
-      />
-      <firebot-checkbox 
           label="Filter Bad Words (via npm bad-words)"
           model="effect.filterBadWords"
       />
@@ -70,19 +68,6 @@ function makeEffect(
           placeholder-text="TTS Name Metadata Key"
       />
     </eos-container>
-    <eos-container ng-if="effect.replaceUsernames" pad-top="true"></eos-container>
-    <eos-container>
-      <firebot-checkbox
-          label="Strip Emotes"
-          model="effect.stripEmotes"
-      />
-    </eos-container>
-    <eos-container ng-if="effect.stripEmotes">
-      <firebot-input
-          model="effect.emotesList" 
-          placeholder-text="Enter emotes list"
-      />
-    </eos-container>
   `,
     optionsController: ($scope) => {
       if ($scope.effect.message == null) {
@@ -90,9 +75,6 @@ function makeEffect(
       }
       if ($scope.effect.filterNonASCII == null) {
         $scope.effect.filterNonASCII = true;
-      }
-      if ($scope.effect.stripUrls == null) {
-        $scope.effect.stripUrls = true;
       }
       if ($scope.effect.filterBadWords == null) {
         $scope.effect.filterBadWords = true;
@@ -103,17 +85,11 @@ function makeEffect(
       if ($scope.effect.ttsNameKey == null) {
         $scope.effect.ttsNameKey = "tts-name";
       }
-      if ($scope.effect.stripEmotes == null) {
-        $scope.effect.stripEmotes = true;
-      }
-      if ($scope.effect.emotesList == null) {
-        $scope.effect.emotesList = "$chatMessageEmoteNames";
-      }
     },
     async onTriggerEvent(event) {
       try {
         const { effect } = event;
-        const options = await parseOptions(effect, runRequest.modules.userDb);
+        const options = await parseOptions(effect, runRequest);
         const response = parseMessage(options);
         return {
           success: true,

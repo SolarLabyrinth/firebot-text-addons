@@ -67,7 +67,7 @@ const script: Firebot.CustomScript<ScriptParams> = {
         handle: "solarReplaceNames",
         description:
           "Cleans the text by replacing @mentions and known usernames with the value in the given metadata-key for that user.",
-        usage: "solarCleanText[text, metadata-key]",
+        usage: "solarReplaceNames[text, metadata-key]",
         possibleDataOutput: ["text"],
         categories: ["advanced", "text"],
       },

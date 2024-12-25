@@ -38,9 +38,9 @@ const script: Firebot.CustomScript<ScriptParams> = {
   run(runRequest) {
     runRequest.modules.replaceVariableManager.registerReplaceVariable({
       definition: {
-        handle: "solarHasBadWords",
+        handle: "solarHasBadWord",
         description: `Returns true if the message contains a bad word according to the bad-words npm package. false if otherwise.`,
-        usage: "solarHasBadWords[text]",
+        usage: "solarHasBadWord[text]",
         possibleDataOutput: ["bool"],
         categories: ["advanced", "text"],
       },

@@ -1,27 +1,7 @@
 import Filter from "bad-words";
 import { RunRequest } from "@crowbartools/firebot-custom-scripts-types";
 
-export type CleanTTSMessageEffectGUIParams = {
-  message: string;
-  filterNonASCII: boolean;
-  filterBadWords: boolean;
-  replaceUsernames: boolean;
-  ttsNameKey: string;
-};
-export type CleanTTSMessageOptions = {
-  message: string;
-  filterNonASCII: boolean;
-  filterBadWords: boolean;
-  replaceUsernames: boolean;
-  atNames: Map<string, string>;
-};
-export type CleanTTSMessageResponse = {
-  ttsParserMessageWasClean: boolean;
-  ttsParserTrippedFilter: "ASCII" | "BAD_WORD" | "";
-  ttsParserCleanedMessage: string;
-};
-
-async function getAtNamesFromDatabase(
+export async function getAtNamesFromDatabase(
   runRequest: RunRequest<any>,
   metadataKey: string
 ) {
@@ -41,10 +21,6 @@ async function getAtNamesFromDatabase(
     const map = new Map<string, string>();
     for (const result of results) {
       map.set(result.username.toLowerCase(), result.metadata[metadataKey]);
-      map.set(
-        "@" + result.username.toLowerCase(),
-        result.metadata[metadataKey]
-      );
     }
     return map;
   } catch (error) {
@@ -52,69 +28,38 @@ async function getAtNamesFromDatabase(
   }
 }
 
-export async function parseOptions(
-  effect: CleanTTSMessageEffectGUIParams,
-  runRequest: RunRequest<any>
-) {
-  const message = effect.message;
-  const filterNonASCII = effect.filterNonASCII;
-  const filterBadWords = effect.filterBadWords;
-  const replaceUsernames = effect.replaceUsernames;
-  const ttsNameKey = effect.ttsNameKey;
-
-  const atNames = replaceUsernames
-    ? await getAtNamesFromDatabase(runRequest, ttsNameKey)
-    : new Map<string, string>();
-
-  const options: CleanTTSMessageOptions = {
-    message,
-    filterNonASCII,
-    filterBadWords,
-    replaceUsernames,
-    atNames,
-  };
-  return options;
-}
-
-function containsNonASCIICharacters(message: string) {
+export function containsNonASCIICharacters(message: string) {
   return /[^ -~]/.test(message);
 }
 
 const badWordFilter = new Filter({});
-function containsBadWord(message: string) {
+export function containsBadWord(message: string) {
   return badWordFilter.isProfane(message);
 }
 
-export function parseMessage(options: CleanTTSMessageOptions) {
-  if (options.filterNonASCII && containsNonASCIICharacters(options.message)) {
-    return {
-      ttsParserMessageWasClean: false,
-      ttsParserTrippedFilter: "ASCII",
-      ttsParserCleanedMessage: "",
-    };
+export function replaceUsernames(
+  message: string,
+  replacements: Map<string, string>
+): string {
+  let result = message;
+  for (const [key, value] of replacements) {
+    result = result
+      .replace(
+        // Handles @mentions with optional spaces
+        // "hi @solarlabyrinth" becomes "hi solar"
+        // "hi@solarlabyrinth" also becomes "hi solar"
+        new RegExp(`([^\\s])?@${key}(?![a-zA-Z0-9])`, "gi"),
+        (_, charBeforeMention) =>
+          charBeforeMention ? charBeforeMention + " " + value : value
+      )
+      // Replaces only if the key is standalone
+      // "hi solarlabyrinth" becomes "hi solar"
+      // "hisolarlabyrinth" is unchanged
+      // "solarlabyrinth2" is unchanged
+      .replace(
+        new RegExp(`(^|[^a-zA-Z0-9])${key}(?![a-zA-Z0-9])`, "gi"),
+        `$1${value}`
+      );
   }
-  if (options.filterBadWords && containsBadWord(options.message)) {
-    return {
-      ttsParserMessageWasClean: false,
-      ttsParserTrippedFilter: "BAD_WORD",
-      ttsParserCleanedMessage: "",
-    };
-  }
-
-  const words = options.message
-    .split(/\s+/)
-    .map((word) => {
-      if (options.replaceUsernames) {
-        return options.atNames.get(word.toLowerCase()) || word;
-      } else {
-        return word;
-      }
-    })
-    .filter((word) => word !== null);
-
-  return {
-    ttsParserMessageWasClean: true,
-    ttsParserTrippedFilter: "",
-    ttsParserCleanedMessage: words.join(" "),
-  };
+  return result;
 }

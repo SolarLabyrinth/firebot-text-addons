@@ -1,96 +1,54 @@
-import { parseMessage } from "../src/message-parser";
+import {
+  containsNonASCIICharacters,
+  containsBadWord,
+  replaceUsernames,
+} from "../src/message-parser";
 
-function getOptions() {
-  return {
-    message: "",
-    filterNonASCII: false,
-    filterBadWords: false,
-    replaceUsernames: false,
-    emotesList: new Set<string>(),
-    atNames: new Map<string, string>(),
-  };
-}
-
-test("it allows all ascii characters", () => {
-  const options = getOptions();
-  options.message = "Munich";
-  options.filterNonASCII = true;
-
-  const response = parseMessage(options);
-
-  expect(response.ttsParserMessageWasClean).toBe(true);
-  expect(response.ttsParserTrippedFilter).toBe("");
-  expect(response.ttsParserCleanedMessage).toBe("Munich");
+describe("containsNonASCIICharacters()", () => {
+  it("allows all ascii characters", () => {
+    const message = "Munich";
+    expect(containsNonASCIICharacters(message)).toBe(false);
+  });
+  it("blocks on non ascii characters", () => {
+    const message = "München";
+    expect(containsNonASCIICharacters(message)).toBe(true);
+  });
 });
 
-test("it blocks on non ascii characters", () => {
-  const options = getOptions();
-  options.message = "München";
-  options.filterNonASCII = true;
-
-  const response = parseMessage(options);
-
-  expect(response.ttsParserMessageWasClean).toBe(false);
-  expect(response.ttsParserTrippedFilter).toBe("ASCII");
-  expect(response.ttsParserCleanedMessage).toBe("");
+describe("containsBadWord()", () => {
+  it("allows all ascii characters", () => {
+    const message = "hello";
+    expect(containsBadWord(message)).toBe(false);
+  });
+  it("blocks on non ascii characters", () => {
+    const message = "hello shit";
+    expect(containsBadWord(message)).toBe(true);
+  });
 });
 
-test("it doesn't block allowed words", () => {
-  const options = getOptions();
-  options.message = "hello";
-  options.filterBadWords = true;
-
-  const response = parseMessage(options);
-
-  expect(response.ttsParserMessageWasClean).toBe(true);
-  expect(response.ttsParserTrippedFilter).toBe("");
-  expect(response.ttsParserCleanedMessage).toBe("hello");
-});
-
-test("it blocks filtered words", () => {
-  const options = getOptions();
-  options.message = "hello shit";
-  options.filterBadWords = true;
-
-  const response = parseMessage(options);
-
-  expect(response.ttsParserMessageWasClean).toBe(false);
-  expect(response.ttsParserTrippedFilter).toBe("BAD_WORD");
-  expect(response.ttsParserCleanedMessage).toBe("");
-});
-
-test("it replaces @names when on", () => {
-  const options = getOptions();
-  options.message = "@example says: hello to @example2";
-  options.replaceUsernames = true;
-  options.atNames = new Map([
-    ["@example", "example"],
-    ["@example2", "example2"],
-  ]);
-
-  const response = parseMessage(options);
-
-  expect(response.ttsParserMessageWasClean).toBe(true);
-  expect(response.ttsParserTrippedFilter).toBe("");
-  expect(response.ttsParserCleanedMessage).toBe(
-    "example says: hello to example2"
-  );
-});
-
-test("it ignores @names when off", () => {
-  const options = getOptions();
-  options.message = "@example says: hello to @example2";
-  options.replaceUsernames = false;
-  options.atNames = new Map([
-    ["@example", "example"],
-    ["@example2", "example2"],
-  ]);
-
-  const response = parseMessage(options);
-
-  expect(response.ttsParserMessageWasClean).toBe(true);
-  expect(response.ttsParserTrippedFilter).toBe("");
-  expect(response.ttsParserCleanedMessage).toBe(
-    "@example says: hello to @example2"
-  );
+describe("replaceUsernames()", () => {
+  it("replaces mentions and standalone names", () => {
+    expect(
+      replaceUsernames(
+        "@solarlabyrinth says: hello to solarlabyrinth",
+        new Map([["solarlabyrinth", "solar"]])
+      )
+    ).toBe("solar says: hello to solar");
+  });
+  it("replaces mentions with characters in front or back", () => {
+    expect(
+      replaceUsernames(
+        "hi@solarlabyrinth!",
+        new Map([["solarlabyrinth", "solar"]])
+      )
+    ).toBe("hi solar!");
+  });
+  it("does not replace mentions for subsets of larger words", () => {
+    expect(
+      replaceUsernames(
+        "hi@solarlabyrinth123",
+        new Map([["solarlabyrinth", "solar"]])
+      )
+    ).toBe("hi@solarlabyrinth123");
+  });
 });

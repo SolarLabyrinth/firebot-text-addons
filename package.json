@@ -1,8 +1,8 @@
 {
   "name": "firebot-custom-tts-message-parser",
-  "scriptOutputName": "solarTTSMessageParser",
+  "scriptOutputName": "solarsTextParsers",
   "version": "1.0.0",
-  "description": "A TTS Message Parsing Script",
+  "description": "Message Parsing Scripts for handling profanity and tts name replacement.",
   "main": "",
   "scripts": {
     "build": "webpack",

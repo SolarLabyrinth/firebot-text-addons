@@ -1,29 +1,29 @@
-import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { registerHasNonAscii } from "./parsers/ascii";
 import {
-  containsBadWord,
-  containsNonASCIICharacters,
-  getAtNamesFromDatabase,
-  replaceUsernames,
-} from "./message-parser";
+  registerCleanConfusables,
+  registerHasConfusables,
+  registerToConfusables,
+} from "./parsers/confusables";
+// import { registerFromL33t } from "./parsers/l33t";
+import { registerHasProfanity } from "./parsers/profanity";
+import { registerReplaceNames } from "./parsers/word-replacement";
 
-type ScriptParams = {
-  replace: string;
-};
+import { Script } from "./firebot/types";
 
-const script: Firebot.CustomScript<ScriptParams> = {
+const script: Script = {
   getScriptManifest() {
     return {
-      name: "SolarLabyrinth's Text Parsers",
+      name: "Text Helpers",
       description:
-        "Message Parsing Scripts for handling profanity and tts name replacement.",
+        "Assorted text parsing scripts for things like profanity, confusables, and tts word replacement.",
+      version: "2.0.0",
       author: "SolarLabyrinth",
-      version: "1.0",
       firebotVersion: "5",
     };
   },
   getDefaultParameters() {
     return {
-      replace: {
+      replacementCSV: {
         title: "Replacement Text (CSV)",
         options: [],
         default: "",
@@ -36,48 +36,19 @@ const script: Firebot.CustomScript<ScriptParams> = {
   },
   parametersUpdated() {},
   run(runRequest) {
-    runRequest.modules.replaceVariableManager.registerReplaceVariable({
-      definition: {
-        handle: "solarHasBadWord",
-        description: `Returns true if the message contains a bad word according to the bad-words npm package. false if otherwise.`,
-        usage: "solarHasBadWord[text]",
-        possibleDataOutput: ["bool"],
-        categories: ["advanced", "text"],
-      },
-      evaluator(_, message: string) {
-        return containsBadWord(message);
-      },
-    });
+    registerHasNonAscii(runRequest);
 
-    runRequest.modules.replaceVariableManager.registerReplaceVariable({
-      definition: {
-        handle: "solarHasNonAscii",
-        description: `Returns true if the message contains non ascii text. false if otherwise.`,
-        usage: "solarHasNonAscii[text]",
-        possibleDataOutput: ["bool"],
-        categories: ["advanced", "text"],
-      },
-      evaluator(_, message: string) {
-        return containsNonASCIICharacters(message);
-      },
-    });
+    registerHasConfusables(runRequest);
+    registerCleanConfusables(runRequest);
+    registerToConfusables(runRequest);
 
-    runRequest.modules.replaceVariableManager.registerReplaceVariable({
-      definition: {
-        handle: "solarReplaceNames",
-        description:
-          "Cleans the text by replacing @mentions and known usernames with the value in the given metadata-key for that user.",
-        usage: "solarReplaceNames[text, metadata-key]",
-        possibleDataOutput: ["text"],
-        categories: ["advanced", "text"],
-      },
-      async evaluator(_, message: string, metadataKey: string) {
-        return replaceUsernames(
-          message,
-          await getAtNamesFromDatabase(runRequest, metadataKey)
-        );
-      },
-    });
+    // TODO: Needs better word processing.
+    // registerFromL33t(runRequest);
+    // registerFromL33t(runRequest);
+
+    registerHasProfanity(runRequest);
+
+    registerReplaceNames(runRequest);
   },
 };
 

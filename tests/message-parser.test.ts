@@ -1,28 +1,28 @@
-import {
-  containsNonASCIICharacters,
-  containsBadWord,
-  replaceUsernames,
-} from "../src/message-parser";
+import { describe, it, expect } from "vitest";
 
-describe("containsNonASCIICharacters()", () => {
+import { hasNonAscii } from "../src/parsers/ascii";
+import { hasProfanity } from "../src/parsers/profanity";
+import { replaceUsernames } from "../src/parsers/word-replacement";
+
+describe("hasNonAscii()", () => {
   it("allows all ascii characters", () => {
     const message = "Munich";
-    expect(containsNonASCIICharacters(message)).toBe(false);
+    expect(hasNonAscii(message)).toBe(false);
   });
   it("blocks on non ascii characters", () => {
     const message = "München";
-    expect(containsNonASCIICharacters(message)).toBe(true);
+    expect(hasNonAscii(message)).toBe(true);
   });
 });
 
-describe("containsBadWord()", () => {
+describe("hasProfanity()", () => {
   it("allows all ascii characters", () => {
     const message = "hello";
-    expect(containsBadWord(message)).toBe(false);
+    expect(hasProfanity(message)).toBe(false);
   });
   it("blocks on non ascii characters", () => {
     const message = "hello shit";
-    expect(containsBadWord(message)).toBe(true);
+    expect(hasProfanity(message)).toBe(true);
   });
 });
 

@@ -12,8 +12,10 @@ const scriptsPath = path.resolve(firebotPath, `profiles/${profile}/scripts`);
 
 for (const file of await fs.readdir(distPath)) {
   const src = path.resolve(distPath, file);
+  const dist = path.resolve(distPath, file.replace(/\.cjs$/, ".js"));
   const dest = path.resolve(scriptsPath, file.replace(/\.cjs$/, ".js"));
 
+  await fs.copyFile(src, dist);
   await fs.copyFile(src, dest);
 
   console.log(`Deployed: ${file}`);

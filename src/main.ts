@@ -10,13 +10,15 @@ import { registerReplaceNames } from "./parsers/word-replacement";
 
 import { Script } from "./firebot/types";
 
+let savedRunRequest;
+
 const script: Script = {
   getScriptManifest() {
     return {
-      name: "Text Helpers",
+      name: "Text Addons",
       description:
         "Assorted text parsing scripts for things like profanity, confusables, and tts word replacement.",
-      version: "2.0.0",
+      version: "2.1.0",
       author: "SolarLabyrinth",
       firebotVersion: "5",
     };
@@ -34,8 +36,12 @@ const script: Script = {
       },
     };
   },
-  parametersUpdated() {},
+  parametersUpdated(parameters) {
+    savedRunRequest.parameters = parameters;
+  },
   run(runRequest) {
+    savedRunRequest = runRequest;
+
     registerHasNonAscii(runRequest);
 
     registerHasConfusables(runRequest);

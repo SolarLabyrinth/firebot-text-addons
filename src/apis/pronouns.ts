@@ -16,6 +16,108 @@ const cachedPronouns = new Map([
   ["any", "Any"],
 ]);
 
+const aeCases = new Map([
+  ["they", "Ae"],
+  ["them", "Aer"],
+  ["their", "Aers"],
+  ["theirs", "Aers"],
+  ["themself", "Aerself"],
+]);
+const anyCases = new Map([
+  ["they", "They"],
+  ["them", "Them"],
+  ["their", "Their"],
+  ["theirs", "Theirs"],
+  ["themself", "Themself"],
+]);
+const eCases = new Map([
+  ["they", "E"],
+  ["them", "Em"],
+  ["their", "Eir"],
+  ["theirs", "Eirs"],
+  ["themself", "Emself"],
+]);
+const faeCases = new Map([
+  ["they", "Fae"],
+  ["them", "Faer"],
+  ["their", "Faer"],
+  ["theirs", "Faers"],
+  ["themself", "Faerself"],
+]);
+const heCases = new Map([
+  ["they", "He"],
+  ["them", "Him"],
+  ["their", "His"],
+  ["theirs", "His"],
+  ["themself", "Himself"],
+]);
+const itCases = new Map([
+  ["they", "It"],
+  ["them", "It"],
+  ["their", "Its"],
+  ["theirs", "Its"],
+  ["themself", "Itself"],
+]);
+const perCases = new Map([
+  ["they", "Per"],
+  ["them", "Per"],
+  ["their", "Per"],
+  ["theirs", "Pers"],
+  ["themself", "Perself"],
+]);
+const sheCases = new Map([
+  ["they", "She"],
+  ["them", "Her"],
+  ["their", "Her"],
+  ["theirs", "Hers"],
+  ["themself", "Herself"],
+]);
+const theyCases = new Map([
+  ["they", "They"],
+  ["them", "Them"],
+  ["their", "Their"],
+  ["theirs", "Theirs"],
+  ["themself", "Themself"],
+]);
+const veCases = new Map([
+  ["they", "Ve"],
+  ["them", "Ver"],
+  ["their", "Ver"],
+  ["theirs", "Vers"],
+  ["themself", "Verself"],
+]);
+const xeCases = new Map([
+  ["they", "Xe"],
+  ["them", "Xem"],
+  ["their", "Xyr"],
+  ["theirs", "Xyrs"],
+  ["themself", "Xemself"],
+]);
+const zieCases = new Map([
+  ["they", "Zie"],
+  ["them", "Hir"],
+  ["their", "Hir"],
+  ["theirs", "Hirs"],
+  ["themself", "Hirself"],
+]);
+
+const defaultCases = theyCases;
+
+const caseMaps = new Map([
+  ["ae", aeCases],
+  ["any", anyCases],
+  ["e", eCases],
+  ["fae", faeCases],
+  ["he", heCases],
+  ["it", itCases],
+  ["per", perCases],
+  ["she", sheCases],
+  ["they", theyCases],
+  ["ve", veCases],
+  ["xe", xeCases],
+  ["zie", zieCases],
+]);
+
 async function fetchPronounCodes() {
   const response = await fetch("https://pronouns.alejo.io/api/pronouns");
   const data: { display: string; name: string }[] = await response.json();
@@ -54,7 +156,7 @@ async function fetchPronounId(username: string) {
   }
 }
 
-function getPrimaryPronoun(pronouns: string) {
+function parsePrimaryPronoun(pronouns: string) {
   return pronouns.split("/")[0];
 }
 
@@ -64,7 +166,30 @@ async function fetchPrimaryPronoun(username: string) {
 
   if (!pronouns) return null;
 
-  const primaryPronoun = getPrimaryPronoun(pronouns);
+  const primaryPronoun = parsePrimaryPronoun(pronouns);
 
   return primaryPronoun;
+}
+
+async function getRawPronounForCase(username: string, _case: string) {
+  const caseLower = _case.toLowerCase();
+
+  const primaryPronoun = await fetchPrimaryPronoun(username);
+  if (!primaryPronoun) return defaultCases.get(caseLower) ?? _case;
+
+  const caseMap = caseMaps.get(primaryPronoun.toLocaleLowerCase());
+  if (!caseMap) return defaultCases.get(caseLower) ?? _case;
+
+  return caseMap.get(caseLower) ?? _case;
+}
+
+export async function getPronounForCase(username: string, _case: string) {
+  const rawPronoun = await getRawPronounForCase(username, _case);
+
+  const isLowerCase = _case.toLowerCase() === _case;
+  const isAllCaps = _case.toUpperCase() === _case;
+
+  if (isLowerCase) return rawPronoun.toLowerCase();
+  if (isAllCaps) return rawPronoun.toUpperCase();
+  return rawPronoun;
 }

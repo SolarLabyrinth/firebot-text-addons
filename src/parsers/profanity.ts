@@ -20,7 +20,7 @@ export function registerHasProfanity(runRequest: ScriptRunRequest) {
   return registerReplaceVariable(runRequest, {
     definition: {
       handle: "solarHasBadWord",
-      description: `Returns true if the message contains a bad word according to the bad-words npm package. false if otherwise.`,
+      description: `Returns true if the message contains profanity according to the obscenity npm package. false if otherwise.`,
       usage: "solarHasBadWord[text]",
       possibleDataOutput: ["bool"],
       categories: ["advanced", "text"],

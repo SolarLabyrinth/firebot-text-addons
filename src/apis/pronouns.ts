@@ -1,3 +1,6 @@
+import { registerReplaceVariable } from "../firebot/replace-variables";
+import { ScriptRunRequest } from "../firebot/types";
+
 const cachedPronouns = new Map([
   ["hehim", "He/Him"],
   ["sheher", "She/Her"],
@@ -192,4 +195,37 @@ export async function getPronounForCase(username: string, _case: string) {
   if (isLowerCase) return rawPronoun.toLowerCase();
   if (isAllCaps) return rawPronoun.toUpperCase();
   return rawPronoun;
+}
+
+export function registerPronoun(runRequest: ScriptRunRequest) {
+  registerReplaceVariable(runRequest, {
+    definition: {
+      handle: "pronoun",
+      description: `Replaces the provided pronoun with the corresponding pronoun for the user according to https://pronouns.alejo.io/. Defaults to the provided pronoun if the user has not set their pronouns.`,
+      usage: "pronoun[they, username]",
+      examples: [
+        {
+          usage: "pronoun[they, username]",
+          description: `Returns he, she, they, etc.`,
+        },
+        {
+          usage: "pronoun[They, username]",
+          description: `Returns He, She, They, etc.`,
+        },
+        {
+          usage: "pronoun[THEY, username]",
+          description: `Returns HE, SHE, THEY, etc.`,
+        },
+        {
+          usage: "pronoun[their, username]",
+          description: `Returns his, her, their, etc.`,
+        },
+      ],
+      possibleDataOutput: ["text"],
+      categories: ["advanced", "text"],
+    },
+    evaluator(_, _case: string, username: string) {
+      return getPronounForCase(username, _case);
+    },
+  });
 }

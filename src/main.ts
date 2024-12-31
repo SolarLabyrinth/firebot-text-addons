@@ -9,6 +9,7 @@ import { registerHasProfanity } from "./parsers/profanity";
 import { registerReplaceNames } from "./parsers/word-replacement";
 
 import { Script } from "./firebot/types";
+import { registerPronoun } from "./apis/pronouns";
 
 let savedRunRequest;
 
@@ -18,7 +19,7 @@ const script: Script = {
       name: "Text Addons",
       description:
         "Assorted text parsing scripts for things like profanity, confusables, and tts word replacement.",
-      version: "2.1.0",
+      version: "2.2.0",
       author: "SolarLabyrinth",
       firebotVersion: "5",
     };
@@ -55,6 +56,8 @@ const script: Script = {
     registerHasProfanity(runRequest);
 
     registerReplaceNames(runRequest);
+
+    registerPronoun(runRequest);
   },
 };
 

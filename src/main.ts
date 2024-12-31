@@ -4,7 +4,6 @@ import {
   registerHasConfusables,
   registerToConfusables,
 } from "./parsers/confusables";
-// import { registerFromL33t } from "./parsers/l33t";
 import { registerHasProfanity, updateMatcher } from "./parsers/profanity";
 import { registerReplaceNames } from "./parsers/word-replacement";
 
@@ -60,10 +59,6 @@ const script: Script = {
     registerHasConfusables(runRequest);
     registerCleanConfusables(runRequest);
     registerToConfusables(runRequest);
-
-    // TODO: Needs better word processing.
-    // registerFromL33t(runRequest);
-    // registerFromL33t(runRequest);
 
     registerHasProfanity(runRequest);
 

@@ -16,11 +16,11 @@ describe("hasNonAscii()", () => {
 });
 
 describe("hasProfanity()", () => {
-  it("allows all ascii characters", () => {
+  it("allows non profane messages", () => {
     const message = "hello";
     expect(hasProfanity(message)).toBe(false);
   });
-  it("blocks on non ascii characters", () => {
+  it("blocks profane messages", () => {
     const message = "hello shit";
     expect(hasProfanity(message)).toBe(true);
   });

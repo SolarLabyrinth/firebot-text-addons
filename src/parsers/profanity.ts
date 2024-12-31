@@ -1,11 +1,19 @@
-import { Filter } from "bad-words";
+import {
+  RegExpMatcher,
+  englishDataset,
+  englishRecommendedTransformers,
+} from "obscenity";
+
 import { registerReplaceVariable } from "../firebot/replace-variables";
 import { ScriptRunRequest } from "../firebot/types";
 
-const badWordFilter = new Filter({});
+const matcher = new RegExpMatcher({
+  ...englishDataset.build(),
+  ...englishRecommendedTransformers,
+});
 
 export function hasProfanity(message: string) {
-  return badWordFilter.isProfane(message);
+  return matcher.hasMatch(message);
 }
 
 export function registerHasProfanity(runRequest: ScriptRunRequest) {

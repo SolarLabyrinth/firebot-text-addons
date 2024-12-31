@@ -6,6 +6,7 @@ import { ReplaceVariable } from "@crowbartools/firebot-custom-scripts-types/type
 
 export type ScriptParams = {
   replacementCSV: string;
+  allowedWords: string;
 };
 
 export type Script = Firebot.CustomScript<ScriptParams>;

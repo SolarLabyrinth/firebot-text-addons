@@ -15,7 +15,7 @@ Copy the provided .js file from the releases tab into your firebot custom script
 - hasProfanity[text] -> boolean
 - replaceWords[text, metadata-key] -> text
   - Replaces standalone usernames and @mentions in the provided text with the value contained in the user's metadata entry for the provided metadata-key.
-- pronoun[they, username] -> boolean
+- pronoun[they, username] -> text
   - Uses the provided "they/them/their/theirs/themself" pronoun in the first argument to pick the user's specific pronoun for the grammatical case represented by that first argument.
   - Uses a user's primary pronoun from https://pr.alejo.io/. Should support all pronouns able to be set on that site. Defaults to the provided first argument if no pronoun is set.
   - ex) "Go check out $pronoun[their, $username] channel!" will become: "Go check out his channel!" if the user has he set as their primary pronoun as "he"

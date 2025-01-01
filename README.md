@@ -21,6 +21,7 @@ Copy the provided .js file from the releases tab into your firebot custom script
   - Uses a user's primary pronoun from https://pr.alejo.io/. Should support all pronouns able to be set on that site. Defaults to the provided first argument if no pronoun is set.
   - ex) "Go check out $pronoun[their, $username] channel!" will become: "Go check out his channel!" if the user has he set as their primary pronoun as "he"
   - ex) "That is $pronoun[theirs, $username]!" will become: "That is hers!" if the user has he set as their primary pronoun as "she"
+  - ex) Supports cases. So: "$pronoun[THEY, $username] ARE AWESOME!" will become: "SHE IS AWESOME!" if the user has he set as their primary pronoun as "she"
 
 ## Config
 

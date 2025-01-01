@@ -4,7 +4,7 @@ My utility functions for string manipulation in firebot.
 
 ## Installation
 
-Copy the provided .js file from the releases tab into your firebot custom scripts folder.
+Copy the provided .js file from the releases tab into your firebot custom scripts folder. And enable it in the settings.
 
 ## Provided Functions
 

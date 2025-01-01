@@ -1,14 +1,14 @@
-import { registerHasNonAscii } from "./parsers/ascii";
+import { Script, ScriptRunRequest } from "./firebot/utils";
+import { updateMatcher } from "./parsers/profanity";
 import {
   registerCleanConfusables,
   registerHasConfusables,
+  registerHasNonAscii,
+  registerHasProfanity,
+  registerPronoun,
+  registerReplaceNames,
   registerToConfusables,
-} from "./parsers/confusables";
-import { registerHasProfanity, updateMatcher } from "./parsers/profanity";
-import { registerReplaceNames } from "./parsers/word-replacement";
-
-import { Script, ScriptRunRequest } from "./firebot/types";
-import { registerPronoun } from "./apis/pronouns";
+} from "./replace-vars";
 
 let savedRunRequest: ScriptRunRequest | undefined;
 

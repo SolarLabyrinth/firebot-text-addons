@@ -1,6 +1,3 @@
-import { getUsersWithTTSNames } from "../firebot/database";
-import { registerReplaceVariable } from "../firebot/replace-variables";
-import { ScriptRunRequest } from "../firebot/types";
 import Papa from "papaparse";
 
 export function replaceUsernames(
@@ -30,7 +27,7 @@ export function replaceUsernames(
   return result;
 }
 
-function parseCSV(text: string) {
+export function parseCSV(text: string) {
   try {
     const values = Papa.parse(text, {
       delimiter: ",",
@@ -54,28 +51,4 @@ export function replaceWords(
     result = result.replace(new RegExp(`\\b${key}\\b`, "gi"), value);
   }
   return result;
-}
-
-export function registerReplaceNames(runRequest: ScriptRunRequest) {
-  registerReplaceVariable(runRequest, {
-    definition: {
-      handle: "solarReplaceNames",
-      description:
-        "Cleans the text by replacing @mentions and known usernames with the value in the given metadata-key for that user.",
-      usage: "solarReplaceNames[text, metadata-key]",
-      possibleDataOutput: ["text"],
-      categories: ["advanced", "text"],
-    },
-    async evaluator(_, message: string, metadataKey: string) {
-      const wordReplacements = parseCSV(runRequest.parameters.replacementCSV);
-      const usernameReplacements = await getUsersWithTTSNames(
-        runRequest,
-        metadataKey
-      );
-      return replaceUsernames(
-        replaceWords(message, wordReplacements),
-        usernameReplacements
-      );
-    },
-  });
 }

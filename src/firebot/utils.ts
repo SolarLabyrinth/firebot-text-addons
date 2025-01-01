@@ -12,4 +12,11 @@ export type ScriptParams = {
 export type Script = Firebot.CustomScript<ScriptParams>;
 export type ScriptRunRequest = RunRequest<ScriptParams>;
 
-export { ReplaceVariable };
+export function registerReplaceVariable(
+  runRequest: ScriptRunRequest,
+  replaceVariable: ReplaceVariable
+) {
+  runRequest.modules.replaceVariableManager.registerReplaceVariable(
+    replaceVariable
+  );
+}

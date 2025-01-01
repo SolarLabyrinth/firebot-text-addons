@@ -4,9 +4,6 @@ import {
   englishRecommendedTransformers,
 } from "obscenity";
 
-import { registerReplaceVariable } from "../firebot/replace-variables";
-import { ScriptRunRequest } from "../firebot/types";
-
 let matcher = buildMatcher();
 
 function buildMatcher(allowedWords = "") {
@@ -28,19 +25,4 @@ export function updateMatcher(allowedWords: string) {
 
 export function hasProfanity(message: string) {
   return matcher.hasMatch(message);
-}
-
-export function registerHasProfanity(runRequest: ScriptRunRequest) {
-  return registerReplaceVariable(runRequest, {
-    definition: {
-      handle: "solarHasBadWord",
-      description: `Returns true if the message contains profanity according to the obscenity npm package. false if otherwise.`,
-      usage: "solarHasBadWord[text]",
-      possibleDataOutput: ["bool"],
-      categories: ["advanced", "text"],
-    },
-    evaluator(_, message: string) {
-      return hasProfanity(message);
-    },
-  });
 }

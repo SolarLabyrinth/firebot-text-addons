@@ -1,4 +1,4 @@
-import { ScriptRunRequest } from "./types";
+import { ScriptRunRequest } from "./utils";
 
 export async function getUsersWithTTSNames(
   runRequest: ScriptRunRequest,

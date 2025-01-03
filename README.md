@@ -17,11 +17,25 @@ Copy the provided .js file from the releases tab into your firebot custom script
   - Replaces standalone usernames and @mentions in the provided text with the value contained in the user's metadata entry for the provided metadata-key.
   - Also replaces any words present in the global script config. Info below.
 - pronoun[they, username] -> text
-  - Uses the provided "they/them/their/theirs/themself" pronoun in the first argument to pick the user's specific pronoun for the grammatical case represented by that first argument.
-  - Uses a user's primary pronoun from https://pr.alejo.io/. Should support all pronouns able to be set on that site. Defaults to the provided first argument if no pronoun is set.
-  - ex) "Go check out $pronoun[their, $username] channel!" will become: "Go check out his channel!" if the user has he set as their primary pronoun as "he"
-  - ex) "That is $pronoun[theirs, $username]!" will become: "That is hers!" if the user has he set as their primary pronoun as "she"
-  - ex) Supports cases. So: "$pronoun[THEY, $username] ARE AWESOME!" will become: "SHE IS AWESOME!" if the user has he set as their primary pronoun as "she"
+
+## Pronouns
+
+```
+$pronoun[they, $username]
+```
+Uses the provided "they/them/their/theirs/themself" pronoun in the first argument to pick the user's specific pronoun for the grammatical case represented by that first argument.
+
+Uses a user's primary pronoun from https://pr.alejo.io/. Should support all pronouns able to be set on that site. Defaults to the provided first argument if no pronoun is set.
+
+|Macro|He Output|She Output|They/Default Output|
+|-|-|-|-|
+|$pronoun[they, $username]|he|she|they|
+|$pronoun[them, $username]|him|her|them|
+|$pronoun[their, $username]|his|her|their|
+|$pronoun[theirs, $username]|his|hers|theirs|
+|$pronoun[themself, $username]|himself|herself|themself|
+|$pronoun[They, $username]|He|She|They|
+|$pronoun[THEY, $username]|HE|SHE|THEY|
 
 ## Config
 
